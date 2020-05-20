@@ -7,7 +7,7 @@ Created on Tue May 19 17:42:53 2020
 
 import pandas as pd
 data_path = '../../data/'
-from preprocessing import preprocessing as p
+from preprocessing import vendas as p
 df = pd.read_excel(data_path+'VENDAS Jan a Mar 2020 Lucas Natan.xlsx')
 
 
@@ -38,4 +38,4 @@ df_filtered['Prazo'] = f_prazo.copy()
 v_prazo = list(map(p.fill_nan_values,v_prazo,v_pgt))
 df_filtered['V.Prazo'] = v_prazo.copy()
 
-
+df_filtered['Forma a prazo'] = list(map(p.prazo,f_pgt,f_prazo))
