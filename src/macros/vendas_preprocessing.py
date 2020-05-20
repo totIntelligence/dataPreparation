@@ -15,13 +15,15 @@ df = pd.read_excel(data_path+'VENDAS Jan a Mar 2020 Lucas Natan.xlsx')
 
 df_filtered = p.filter_str(df,'CPF/CNPJ:', 'CPF/CNPJ:', na = False)
 df_filtered = p.filter_str(df_filtered,'Tipo Operação', 'E', na = False)
-df_filtered = p.filter_str(df_filtered,'Tipo Operação', 'S', na = False)
 
 cols = list(df_filtered)
 df_filtered = p.excludeUnnamedCols(df_filtered, cols, 'Unnamed')
 cols = list(df_filtered)
 
 df_filtered = df_filtered.reset_index(drop=True)
+
+cols = list(df_filtered)
+
 
 t_f_n = list(df_filtered['Total Nota Fiscal'])
 f_pgt = list(df_filtered['F.PGT'])
