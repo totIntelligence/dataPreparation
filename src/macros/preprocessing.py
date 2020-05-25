@@ -38,3 +38,39 @@ class vendas:
             return('30 DIAS - SITE')
         else:
             return('SEM PRAZO')
+        
+    def avista(f_pgt,f_prazo):
+        if (f_pgt == 'DÉBITO') | (f_prazo == 'DÉBITO'):
+            return('DÉBITO')
+        elif (f_pgt == 'DINHEIRO') | (f_prazo == 'DINHEIRO'):
+            return('DINHEIRO')
+        elif (f_pgt == 'DINHEIRO ( PENDENTE ACERTO)') | (f_prazo == 'DINHEIRO ( PENDENTE ACERTO)'):
+            return('DINHEIRO ( PENDENTE ACERTO)')
+        elif (f_pgt == 'TRANFÊNCIA ITAU') | (f_prazo == 'TRANFÊNCIA ITAU'):
+            return('TRANFÊNCIA ITAU')
+        elif (f_pgt == 'TRANFÊNCIA SANTANDER') | (f_prazo == 'TRANFÊNCIA SANTANDER'):
+            return('TRANFÊNCIA SANTANDER')
+        elif (f_pgt == 'TROCA') | (f_prazo == 'TROCA'):
+            return('TROCA')
+        else:
+            return('A PRAZO')
+        
+    def valor_prazo(forma_a_prazo,forma_a_vista,tfn,f_prazo,v_pgt,v_prazo):
+        if (forma_a_prazo == 'SEM PRAZO'):
+            return(0)
+        elif (forma_a_prazo != 'SEM PRAZO') & (forma_a_vista == 'A PRAZO'):
+            return(tfn)
+        elif forma_a_prazo == f_prazo:
+            return(tfn - v_pgt)
+        else:
+            return(tfn - v_prazo)
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        

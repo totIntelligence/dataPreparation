@@ -39,3 +39,7 @@ v_prazo = list(map(p.fill_nan_values,v_prazo,v_pgt))
 df_filtered['V.Prazo'] = v_prazo.copy()
 
 df_filtered['Forma a prazo'] = list(map(p.prazo,f_pgt,f_prazo))
+df_filtered['Forma a vista'] = list(map(p.avista,f_pgt,f_prazo))
+df_filtered['Valor a prazo'] = list(map(p.valor_prazo,df_filtered['Forma a prazo'],
+                                        df_filtered['Forma a vista'],
+                                        t_f_n,f_prazo,v_pgt,v_prazo))
