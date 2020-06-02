@@ -131,6 +131,6 @@ if __name__ == '__main__':
     df = pd.read_excel(data_path+'VENDAS Jan a Mar 2020 Lucas Natan.xlsx')
     
     df_filtered = vendas.run(df)
-    
+    df_filtered.to_csv('vendas', sep='\t') 
     del data_path,df        
         
