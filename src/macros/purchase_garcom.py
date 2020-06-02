@@ -38,4 +38,6 @@ if __name__ == '__main__':
     df = pd.read_excel(data_path+'Compras Jan a Mar 2020 Lucas Natan.xlsx')
     df = compras.run(df)    
     df_garcom = garcomCompras.run(df)       
-          
+    df_garcom.drop_duplicates()     
+    
+
