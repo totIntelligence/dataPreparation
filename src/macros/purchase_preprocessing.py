@@ -167,17 +167,20 @@ class compras:
                                                         df_filtered['Valor a vista'],
                                                         df_filtered['Valor a prazo'], 
                                                         df_filtered['Parcela']))
+        
+        
+ 
 
         return(df_filtered) 
     
  
 
-if __name__ == '__main__':
+# if __name__ == '__main__':
     
-    data_path = '../../data/'
-    df = pd.read_excel(data_path+'Compras Jan a Mar 2020 Lucas Natan.xlsx')
+#     data_path = '../../data/'
+#     df = pd.read_excel(data_path+'Compras Jan a Mar 2020 Lucas Natan.xlsx')
     
-    df_filtered = compras.run(df)
-    df_filtered.to_csv('compras', sep='\t')
-    del data_path,df        
+#     df_filtered = compras.run(df)
+#     df_filtered.to_csv('compras', sep='\t')
+#     del data_path,df        
          
