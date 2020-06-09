@@ -13,8 +13,8 @@ class garcomCompras:
             return 1
         else:
             return(parcelas)
-    def run(df):  
-        return pd.DataFrame({
+    def run(df):           
+        df = pd.DataFrame({
         'cnpj_loja': df['CPF/CNPJ:'].copy(),
         'id_doc_client': list(map(garcomCompras.create_idx,df['Documento:'],df['CPF/CNPJ:'],df['Emissão:'],df['Cod. Cliente/Fornecedor:'])) ,
         'id_documento': df['Documento:'].copy(),
@@ -31,13 +31,13 @@ class garcomCompras:
         'valor_parcelas': df['Valor Parcela'].copy(),        
         'qtd_parcelas':    list(map(garcomCompras.defParcela,df['Forma a prazo'].copy(),df['Parcelas']))
         })
+        df = df.drop_duplicates()     
+        df.reset_index(drop = True,inplace=True)  
+        return df
          
  
 if __name__ == '__main__':
     data_path = '../../data/'
     df = pd.read_excel(data_path+'Compras Jan a Mar 2020 Lucas Natan.xlsx')
     df = compras.run(df)    
-    df_garcom = garcomCompras.run(df)       
-    df_garcom.drop_duplicates()     
-    
-
+    df_garcom = garcomCompras.run(df)        
