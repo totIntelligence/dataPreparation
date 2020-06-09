@@ -1,111 +1,159 @@
+# -*- coding: utf-8 -*-
+"""
+Created on Mon Jun  8 19:14:07 2020
+
+@author: henrique.milagres
+"""
+
 import pandas as pd
 from purchase_preprocessing import *
 from purchase_garcom import *
+import datetime
+from datetime import timedelta 
+import calendar  
 
-class comprasNF:
+class purchaseNF:
     
     def qtdParcelasLinha(forma_a_vista,forma_a_prazo,qtd_parcelas):
         if (forma_a_vista == 'A PRAZO') & (forma_a_prazo == 'SEM PRAZO'):
-            return(qtd_parcelas + 1)
+            return(int(qtd_parcelas) + 1)
         else:
-            return(qtd_parcelas)
+            return(int(qtd_parcelas))
 
+    def loja(cnpj):
+        if str(cnpj) == '28.608.143/0001-08':
+            return('Sede')
+        elif str(cnpj) == '28608143000108':
+            return('Del Rey')
+        elif str(cnpj) == '27.809.544/0001-55':
+            return('Cidade')
+            
+    
+    def run(df_garcom):
+        cnpjLoja = df_garcom['cnpj_loja'].copy()
+        idDocumento = df_garcom['id_documento'].copy()
+        dataEmissao = df_garcom['data_emissao'].copy()
+        numeroNota = df_garcom['numero_nota'].copy()
+        cpfCnpjCliente = df_garcom['cpf_cnpj_cliente'].copy()
+        nomeCliente = df_garcom['nome_cliente'].copy()
+        cepCliente = df_garcom['cep_cliente'].copy()
+        valorNotaFiscal = df_garcom['valor_nota_fiscal'].copy()
+        formaAPrazo = df_garcom['forma_a_prazo'].copy()
+        valorAPrazo = df_garcom['valor_a_prazo'].copy()
+        formaAVista = df_garcom['forma_a_vista'].copy()
+        valorAVista = df_garcom['valor_a_vista'].copy()
+        valorParcelas = df_garcom['valor_parcelas'].copy()
+        qtdParcelas = df_garcom['qtd_parcelas'].copy()
+        
+        qtdParcelasLinha = list(map(purchaseNF.qtdParcelasLinha,formaAVista,formaAPrazo,qtdParcelas))
+ 
+        
+        notafiscal = []
+        
+        for i in range(0,len(cnpjLoja)):
+            
+            for j in range(qtdParcelasLinha[i]):
+                
+                if ((qtdParcelasLinha[i] > qtdParcelas.iloc[i]) | (qtdParcelas.iloc[i] == 1)) & (formaAPrazo.iloc[i] == 'SEM PRAZO'):
+                    parcela = j
+                else:
+                    parcela = j + 1
+            
+                if parcela == 0:
+                    valor_a_receber = valorAVista.iloc[i]
+                else:
+                    valor_a_receber = valorParcelas.iloc[i]
+                
+                qts_dias_prazo = (30*parcela) + 1
+                
+                data_previsao = datetime.datetime.strptime(dataEmissao.iloc[i], '%d/%m/%Y') + \
+                                timedelta(days=qts_dias_prazo)
+                
+                if data_previsao.weekday() == 4: # 4 sexta
+                    data_previsao = data_previsao + timedelta(days=3)
+                elif data_previsao.weekday() == 5: # 4 sexta
+                    data_previsao = data_previsao + timedelta(days=2)
+                elif data_previsao.weekday() == 6: # 4 sexta
+                    data_previsao = data_previsao + timedelta(days=1)
+        
+                    
+                if (formaAVista.iloc[i] == 'DINHEIRO') | (formaAVista.iloc[i] == "DINHEIRO ( PENDENTE ACERTO)") & (parcela == 0):
+                    data_previsao = datetime.datetime.strptime(dataEmissao.iloc[i], '%d/%m/%Y')
+        
+                notafiscal.append([cnpjLoja.iloc[i],
+                                  idDocumento.iloc[i],
+                                  dataEmissao.iloc[i],
+                                  numeroNota.iloc[i],
+                                  cpfCnpjCliente.iloc[i],
+                                  nomeCliente.iloc[i],
+                                  cepCliente.iloc[i],
+                                  valorNotaFiscal.iloc[i],
+                                  formaAPrazo.iloc[i],
+                                  valorAPrazo.iloc[i],
+                                  formaAVista.iloc[i],
+                                  valorAVista.iloc[i],
+                                  valor_a_receber,
+                                  qtdParcelas.iloc[i],
+                                  parcela,
+                                  data_previsao])
+        
+        notafiscal = pd.DataFrame(notafiscal)
 
-if _name_ == '__main__':
+        notafiscal.columns = ['cnpjLoja',
+                              'idDocumento',
+                              'dataEmissao',
+                              'numeroNota',
+                              'cpfCnpjCliente',
+                              'nomeCliente',
+                              'cepCliente',
+                              'valorNotaFiscal',
+                              'formaAPrazo',
+                              'valorAPrazo',
+                              'formaAVista',
+                              'valorAVista',
+                              'valor_a_receber',
+                              'qtdParcelas',
+                              'parcela',
+                              'data_previsao'
+                              ]
+        
+        notafiscal['loja'] = list(map(purchaseNF.loja,notafiscal['cnpjLoja']))
+        
+        notafiscal = notafiscal[['loja',
+                              'cnpjLoja',
+                              'idDocumento',
+                              'dataEmissao',
+                              'numeroNota',
+                              'cpfCnpjCliente',
+                              'nomeCliente',
+                              'cepCliente',
+                              'valorNotaFiscal',
+                              'formaAPrazo',
+                              'valorAPrazo',
+                              'formaAVista',
+                              'valorAVista',
+                              'valor_a_receber',
+                              'qtdParcelas',
+                              'parcela',
+                              'data_previsao'
+                              ]]
+        return(notafiscal)
+
+    
+if __name__ == '__main__':
     
     data_path = '../../data/'
     df = pd.read_excel(data_path+'Compras Jan a Mar 2020 Lucas Natan.xlsx')
     df = compras.run(df)
-    df_garcom = garcomCompras.run(df)
-    
-    
+    df_garcom = garcomCompras.run(df)       
  
     
+    notaFiscal = purchaseNF.run(df_garcom)
     
     
-    cnpjLoja = dfGarcom['cnpj_loja'].copy()
-    idDocumento = dfGarcom['id_documento'].copy()
-    dataEmissao = dfGarcom['data_emissao'].copy()
-    cpfCnpjCliente = dfGarcom['cpf_cnpj_cliente'].copy()
-    nomeCliente = dfGarcom['nome_cliente'].copy()
-    cepCliente = dfGarcom['cep_cliente'].copy()
-    valorNotaFiscal = dfGarcom['valor_nota_fiscal'].copy()
-    formaAPrazo = dfGarcom['forma_a_prazo'].copy()
-    valorAPrazo = dfGarcom['valor_a_prazo'].copy()
-    formaAVista = dfGarcom['forma_a_vista'].copy()
-    valorAVista = dfGarcom['valor_a_vista'].copy()
-    valorParcelas = dfGarcom['valor_parcelas'].copy()
-    qtdParcelas = dfGarcom['qtd_parcelas'].copy()
-    
-    qtdParcelasLinha = list(map(comprasNF.qtdParcelasLinha,formaAVista,formaAPrazo,qtdParcelas))
     
     
-    For indice = 0 To QTD_PARCELAS_LINHA
     
-    If (QTD_PARCELAS_LINHA > QTD_PARCELAS) Or (QTD_PARCELAS = 1 And FORMA_A_PRAZO = "SEM PRAZO") Then
-    PARCELA = indice
-    Else
-    PARCELA = indice + 1
-    End If
-    
-    If PARCELA = 0 Then
-    VALOR_A_RECEBER = VALOR_A_VISTA
-    Else
-    VALOR_A_RECEBER = VALOR_PARCELAS
-    End If
-    
-    QTD_DIAS_PRAZO = (30 * PARCELA) + 1
-    
-    DATA_PREVISAO = DateAdd("d", QTD_DIAS_PRAZO, DATA_EMISSAO)
-    
-    If Weekday(DATA_PREVISAO) = 6 Then
-    DATA_PREVISAO = DateAdd("d", 3, DATA_PREVISAO)
-    ElseIf Weekday(DATA_PREVISAO) = 7 Then
-    DATA_PREVISAO = DateAdd("d", 2, DATA_PREVISAO)
-    Else
-    DATA_PREVISAO = DATA_PREVISAO
-    End If
-    
-    If (FORMA_A_VISTA = "DINHEIRO" Or FORMA_A_VISTA = "DINHEIRO ( PENDENTE ACERTO)") And PARCELA = 0 Then
-    DATA_PREVISAO = DateAdd("d", 0, DATA_EMISSAO)
-    Else
-    DATA_PREVISAO = DATA_PREVISAO
-    End If
-    
-    
-    'Preenche colunas da tabela
-    
-    Worksheets("Compras_NF").Cells(Linha + indice, 2).Value = CNPJ_LOJA
-    Worksheets("Compras_NF").Cells(Linha + indice, 3).Value = ID_DOCUMENTO
-    Worksheets("Compras_NF").Cells(Linha + indice, 4).Value = DATA_EMISSAO
-    Worksheets("Compras_NF").Cells(Linha + indice, 5).Value = NUMERO_NOTA
-    Worksheets("Compras_NF").Cells(Linha + indice, 6).Value = CPF_CNPJ_CLIENTE
-    Worksheets("Compras_NF").Cells(Linha + indice, 7).Value = NOME_CLIENTE
-    Worksheets("Compras_NF").Cells(Linha + indice, 8).Value = CEP_CLIENTE
-    Worksheets("Compras_NF").Cells(Linha + indice, 9).Value = VALOR_NOTA_FISCAL
-    Worksheets("Compras_NF").Cells(Linha + indice, 10).Value = FORMA_A_PRAZO
-    Worksheets("Compras_NF").Cells(Linha + indice, 11).Value = VALOR_A_PRAZO
-    Worksheets("Compras_NF").Cells(Linha + indice, 12).Value = FORMA_A_VISTA
-    Worksheets("Compras_NF").Cells(Linha + indice, 13).Value = VALOR_A_VISTA
-    Worksheets("Compras_NF").Cells(Linha + indice, 14).Value = VALOR_A_RECEBER
-    Worksheets("Compras_NF").Cells(Linha + indice, 15).Value = QTD_PARCELAS
-    Worksheets("Compras_NF").Cells(Linha + indice, 16).Value = PARCELA
-    Worksheets("Compras_NF").Cells(Linha + indice, 17).Value = DATA_PREVISAO
-
-    
-    
-
-   
-   If Worksheets("Compras_NF").Cells(Linha + indice, 2).Value = "28.608.143/0001-08" Then
-   Worksheets("Compras_NF").Cells(Linha + indice, 1).Value = "Sede"
-   ElseIf Worksheets("Compras_NF").Cells(Linha + indice, 2).Value = "28608143000108" Then
-   Worksheets("Compras_NF").Cells(Linha + indice, 1).Value = "Del Rey"
-   ElseIf Worksheets("Compras_NF").Cells(Linha + indice, 2).Value = "27.809.544/0001-55" Then
-   Worksheets("Compras_NF").Cells(Linha + indice, 1).Value = "Cidade"
-   End If
-   
-   
-    Next indice    
     
     
     

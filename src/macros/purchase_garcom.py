@@ -29,7 +29,7 @@ class garcomCompras:
         'forma_a_vista': df['Forma a vista'].copy(),
         'valor_a_vista': df['Valor a vista'].copy(),  
         'valor_parcelas': df['Valor Parcela'].copy(),        
-        'qtd_parcelas':    list(map(garcomCompras.defParcela,df['Forma a prazo'].copy(),df['Parcelas']))
+        'qtd_parcelas':    list(map(garcomCompras.defParcela,df['Forma a prazo'].copy(),df['Parcelas'].copy()))
         })
         df = df.drop_duplicates()     
         df.reset_index(drop = True,inplace=True)  

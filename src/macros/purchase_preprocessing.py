@@ -157,7 +157,7 @@ class compras:
          
         
         ## PARCELA = 0 vira 1 e sem prazo parcela = 1
-        df_filtered['Parcela'] = list(map(compras.parcela_value,parcela,df_filtered['Forma a prazo']))
+        df_filtered['Parcelas'] = list(map(compras.parcela_value,parcela,df_filtered['Forma a prazo']))
         
         ## VALOR A VISTA      
         df_filtered['Valor a vista'] = list(map(compras.valor_a_vista,t_f_n,df_filtered['Valor a prazo']))
@@ -166,7 +166,7 @@ class compras:
         df_filtered['Valor Parcela'] = list(map(compras.valor_parcela,df_filtered['Forma a prazo'],
                                                         df_filtered['Valor a vista'],
                                                         df_filtered['Valor a prazo'], 
-                                                        df_filtered['Parcela']))
+                                                        df_filtered['Parcelas']))
         
         
  
@@ -175,12 +175,12 @@ class compras:
     
  
 
-# if __name__ == '__main__':
+if __name__ == '__main__':
     
-#     data_path = '../../data/'
-#     df = pd.read_excel(data_path+'Compras Jan a Mar 2020 Lucas Natan.xlsx')
+    data_path = '../../data/'
+    df = pd.read_excel(data_path+'Compras Jan a Mar 2020 Lucas Natan.xlsx')
     
-#     df_filtered = compras.run(df)
-#     df_filtered.to_csv('compras', sep='\t')
-#     del data_path,df        
+    df_filtered = compras.run(df)
+    #df_filtered.to_csv('compras', sep='\t')
+    del data_path,df        
          
