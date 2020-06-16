@@ -31,5 +31,5 @@ if __name__ == '__main__':
     df_compras_nf =  purchaseNF.run(df_compras_garcom) 
     df_compras_produto =  comprasProdutos.run(df_compras_filtered)        
 
-    
+#----------------------------    
      
