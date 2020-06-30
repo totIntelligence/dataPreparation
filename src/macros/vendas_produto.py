@@ -54,5 +54,3 @@ if __name__ == '__main__':
     df = vendas.run(df)
     
     vendas_produto = produtos.run(df)
-
-    

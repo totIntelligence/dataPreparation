@@ -52,10 +52,8 @@ class vendasProcessado:
         return(df_saida)
 
 
-
-
-
-if __name__ == '__main__':    
+if __name__ == '__main__':  
+    
     data_path = '../../data/'   
     
     df_vendas = pd.read_excel(data_path+'VENDAS Jan a Mar 2020 Lucas Natan.xlsx')  
@@ -64,6 +62,4 @@ if __name__ == '__main__':
     df_vendas_nf =  vendasNF.run(df_vendas_garcom) 
     
     df_vendas_saida = vendasProcessado.run(df_vendas_nf)
-#----------------------------    
- 
  
